@@ -1,4 +1,5 @@
 "use client";
+/* AM CLINIC TORCY LASER — 1+1 + aisselles 9€ — PAS MARSEILLE 6 */
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
@@ -14,78 +15,103 @@ const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 const CENTER_NAME = "AM Clinic";
 const CITY_NAME = "Torcy";
 
-const zones = ["Visage", "Cou", "Décolleté", "Plusieurs zones"];
+const zones = [
+  "Aisselles",
+  "Maillot",
+  "Jambes complètes",
+  "Demi-jambes",
+  "Bras",
+  "Visage",
+  "Dos / torse",
+  "Plusieurs zones",
+];
 
-const technologies = [
+const highlights = [
   {
-    title: "Radiofréquence",
-    text: "Stimule le collagène pour un effet liftant visible dès la séance découverte.",
+    title: "1 zone achetée = 1 offerte",
+    text: "Vous payez une zone, la seconde est offerte. Offre valable en octobre, places limitées.",
   },
   {
-    title: "Diagnostic complet visage",
-    text: "Analyse de votre peau pour cibler rides, relâchement, pores et manque d’éclat.",
+    title: "Aisselles à 9€",
+    text: "Testez le laser dès la première séance aisselles, à 9€ seulement.",
   },
   {
-    title: "Séance de 20 minutes",
-    text: "Un protocole court, précis, pour tester la radiofréquence sans engagement long.",
+    title: "Résultat durable",
+    text: "Moins de poils, moins de rasage, peau plus nette séance après séance.",
   },
   {
-    title: "Offre limitée",
-    text: "Places limitées à Torcy. Diagnostic + séance découverte à 69€.",
+    title: "On vous rappelle",
+    text: "Laissez vos coordonnées, l’équipe AM Clinic à Torcy bloque votre offre.",
   },
 ];
 
 const faq = [
   {
-    question: "La séance découverte à 69€ comprend quoi ?",
+    question: "1 zone achetée = 1 zone offerte, c’est vrai ?",
     answer:
-      "Un diagnostic complet visage, puis 20 minutes de radiofréquence pour tester l’effet liftant sur votre peau.",
+      "Oui. Pour une zone achetée, une seconde zone vous est offerte. Le détail est validé au centre, selon les zones choisies. Offre octobre, quantité limitée.",
   },
   {
-    question: "Combien de temps dure la séance ?",
-    answer: "20 minutes de radiofréquence, après le diagnostic visage.",
-  },
-  {
-    question: "Les résultats se voient-ils dès la 1re séance ?",
+    question: "La première séance aisselles est-elle vraiment à 9€ ?",
     answer:
-      "Oui. La radiofréquence est conçue pour un effet liftant et plus de fermeté, visibles dès la séance découverte.",
+      "Oui. Vous pouvez tester le laser sur les aisselles dès la première séance, à 9€.",
   },
   {
-    question: "Quelles zones peut-on traiter ?",
-    answer: "Visage, cou et décolleté. Vous pouvez cocher une ou plusieurs zones.",
+    question: "Puis-je combiner le 1+1 et les aisselles à 9€ ?",
+    answer:
+      "Oui. L’offre octobre associe le 1 zone achetée = 1 zone offerte et la première séance aisselles à 9€. On vous confirme les zones au rappel.",
+  },
+  {
+    question: "Combien de séances faut-il prévoir ?",
+    answer:
+      "Cela dépend de la zone, de la peau et du poil. Le premier rendez-vous sert à estimer le protocole adapté.",
   },
   {
     question: "L’offre est-elle limitée ?",
     answer:
-      "Oui. Places limitées. Radiofréquence séance découverte 69€ + diagnostic complet visage, le temps de l’opération.",
+      "Oui. C’est l’offre octobre. Quantité limitée à ce tarif.",
   },
 ];
 
 const beforeAfter = [
   {
-    area: "Rides",
-    result: "Traits lissés, peau plus reposée",
-    src: "/lift4-rides.png",
+    area: "Aisselles",
+    result: "Moins de poils, peau plus nette",
+    src: "/before-after-aisselles.jpg",
   },
   {
-    area: "Texture",
-    result: "Grain de peau plus lisse, plus d’éclat",
-    src: "/lift4-texture.png",
+    area: "Irritations",
+    result: "Fini les poils incarnés du rasage",
+    src: "/before-after-irritations.jpg",
   },
   {
-    area: "Regard",
-    result: "Contour de l’œil plus net",
-    src: "/lift4-regard.png",
+    area: "Jambe",
+    result: "Routine rasage fortement réduite",
+    src: "/before-after-jambe.jpg",
   },
   {
-    area: "Ovale",
-    result: "Ridules atténuées, peau plus ferme",
-    src: "/lift4-ovale.png",
+    area: "Dos",
+    result: "Réduction visible sur grande zone",
+    src: "/before-after-dos.jpg",
+  },
+  {
+    area: "Aisselles",
+    result: "Zone plus propre, plus homogène",
+    src: "/before-after-epaules.jpg",
   },
 ];
 
 function track(eventName: string, params?: Record<string, unknown>) {
   window.fbq?.("track", eventName, params);
+}
+
+function postJson(url: string, body: unknown) {
+  void fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    keepalive: true,
+  }).catch(() => {});
 }
 
 function getTrackingParams() {
@@ -141,7 +167,7 @@ export default function Home() {
     track("PageView");
     track("ViewContent", {
       center: CITY_NAME,
-      content_name: "Tunnel radiofréquence AM Clinic",
+      content_name: "Tunnel laser AM Clinic",
     });
   }, []);
 
@@ -171,9 +197,9 @@ export default function Home() {
       zones: selectedZones,
       center: CITY_NAME,
       center_display_name: `${CENTER_NAME} ${CITY_NAME}`,
-      offer: "Radiofréquence séance découverte 69€ (20 min) + diagnostic complet visage",
-      page: `Radiofréquence ${CENTER_NAME} ${CITY_NAME}`,
-      source: "am-clinic-torcy",
+      offer: "1 zone achetée = 1 zone offerte + première séance aisselles 9€",
+      page: `Laser ${CENTER_NAME} ${CITY_NAME}`,
+      source: "am-clinic-torcy-laser",
       submitted_at: new Date().toISOString(),
       page_url: typeof window !== "undefined" ? window.location.href : "",
       ...trackingParams,
@@ -181,15 +207,26 @@ export default function Home() {
 
     setIsSubmitting(true);
     try {
+      const nameParts = payload.full_name.trim().split(/\s+/).filter(Boolean);
+      const prenom = nameParts[0] ?? "";
+      const nom = nameParts.slice(1).join(" ");
       if (LEAD_WEBHOOK_URL) {
-        await fetch(LEAD_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+        postJson(LEAD_WEBHOOK_URL, payload);
       }
+      postJson(
+        "https://www.bookeai.fr/api/leads?center=am-clinic-torcy&source=landing",
+        {
+          first_name: prenom,
+          last_name: nom,
+          email: payload.email,
+          phone: payload.phone,
+          offre: "Laser 1+1 + aisselles 9€",
+          axe: "Laser",
+          commentaire: `Laser — 1 zone achetée = 1 offerte + aisselles 9€ — zones : ${selectedZones.join(", ") || "non précisé"} | Contact message : ${messageOptIn}`,
+        },
+      );
       track("Lead", {
-        content_name: "Radiofréquence séance découverte 69€",
+        content_name: "1+1 laser + aisselles 9€",
         center: CITY_NAME,
         zones: selectedZones.join(", "),
       });
@@ -211,16 +248,14 @@ export default function Home() {
 
       <section className="hero-section" aria-labelledby="page-title">
         <div className="hero-copy">
-          <p className="eyebrow">Offre à durée limitée · Torcy</p>
-          <h1 id="page-title">Radiofréquence séance découverte 69€</h1>
-          <p className="hero-subtitle">
-            20 min de séance + diagnostic complet visage
-          </p>
+          <p className="eyebrow">Quantité limitée</p>
+          <h1 id="page-title">1 zone achetée = 1 zone offerte</h1>
+          <p className="hero-subtitle">1ère séance aisselles 9€</p>
         </div>
 
         <div
           className="before-after-carousel"
-          aria-label="Avant après radiofréquence"
+          aria-label="Avant après épilation laser"
         >
           <div className="before-after-track">
             {[...beforeAfter, ...beforeAfter].map((item, index) => (
@@ -230,7 +265,7 @@ export default function Home() {
               >
                 <div className="photo-pair">
                   <img
-                    alt={`Avant après radiofréquence - ${item.area}`}
+                    alt={`Avant après épilation laser - ${item.area}`}
                     decoding="async"
                     fetchPriority={index === 0 ? "high" : "auto"}
                     height={465}
@@ -252,16 +287,9 @@ export default function Home() {
       {step === "intro" && (
         <section className="quiz-panel" aria-labelledby="zone-question">
           <div>
-            <p className="offer-ready">
-              Votre séance découverte à 69€ est presque prête
-            </p>
-            <p className="step-label">
-              2 étapes pour réserver · places limitées
-            </p>
-            <h2 id="zone-question">Quelle(s) zone(s) souhaitez-vous traiter ?</h2>
-            <p className="helper-text">
-              Visage, cou ou décolleté. Cochez une ou plusieurs zones.
-            </p>
+            <p className="offer-ready">Votre offre</p>
+            <p className="step-label">2 étapes pour bloquer le tarif</p>
+            <h2 id="zone-question">Quelle(s) zone(s) voulez-vous traiter ?</h2>
           </div>
 
           <div className="zone-grid">
@@ -290,7 +318,7 @@ export default function Home() {
             onClick={openForm}
             type="button"
           >
-            Profitez de l&apos;offre
+            Je profite de l&apos;offre
           </button>
           <p className="offer-limit">Quantité limitée à ce tarif</p>
         </section>
@@ -305,11 +333,10 @@ export default function Home() {
           >
             Retour
           </button>
-          <p className="offer-ready">Dernière étape pour la séance à 69€</p>
-          <p className="step-label">On vous rappelle pour réserver</p>
+          <p className="offer-ready">Dernière étape pour le 1+1 et les 9€</p>
+          <p className="step-label">On vous rappelle pour bloquer l’offre</p>
           <h2 id="form-title">
-            Vos coordonnées pour la radiofréquence découverte + diagnostic
-            visage.
+            Vos coordonnées pour 1 zone achetée = 1 offerte + aisselles à 9€.
           </h2>
 
           <form className="lead-form" onSubmit={submitLead}>
@@ -369,7 +396,7 @@ export default function Home() {
               disabled={isSubmitting}
               type="submit"
             >
-              {isSubmitting ? "Envoi en cours..." : "Profitez de l'offre"}
+              {isSubmitting ? "Envoi en cours..." : "Je profite de l'offre"}
             </button>
             <p className="offer-limit">Quantité limitée à ce tarif</p>
           </form>
@@ -379,28 +406,23 @@ export default function Home() {
       {step === "thanks" && (
         <section className="thanks-panel" aria-labelledby="thanks-title">
           <p className="step-label">Demande reçue</p>
-          <h2 id="thanks-title">Merci, votre demande est bien prise en compte.</h2>
+          <h2 id="thanks-title">Merci, votre offre est bien demandée.</h2>
           <p>
             L&apos;équipe AM Clinic à Torcy vous rappelle rapidement pour
-            confirmer votre séance découverte radiofréquence de 20 min +
-            diagnostic complet visage à 69€.
+            confirmer le 1 zone achetée = 1 zone offerte et la première séance
+            aisselles à 9€.
           </p>
         </section>
       )}
 
       <section className="proof-section" aria-labelledby="offer-title">
-        <h2 id="offer-title">Radiofréquence + diagnostic visage</h2>
+        <h2 id="offer-title">Pourquoi ça vaut le coup maintenant</h2>
         <p className="idiag-text">
-          Séance découverte de 20 minutes, associée à un diagnostic complet
-          du visage, pour un protocole adapté à votre peau.
+          Offre octobre uniquement : vous doublez une zone, et vous testez le
+          laser dès 9€ sur les aisselles.
         </p>
-        <ul className="idiag-points">
-          <li>Rides, ridules, relâchement cutané</li>
-          <li>Pores dilatés, manque de fermeté</li>
-          <li>Peau fatiguée, manque d&apos;éclat</li>
-        </ul>
         <div className="tech-grid">
-          {technologies.map((item) => (
+          {highlights.map((item) => (
             <article className="tech-card" key={item.title}>
               <h3>{item.title}</h3>
               <p>{item.text}</p>
@@ -423,3 +445,4 @@ export default function Home() {
     </main>
   );
 }
+
